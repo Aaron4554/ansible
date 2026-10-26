@@ -1,0 +1,25 @@
+- name: Update all hosts
+  hosts: all
+  become: true
+  tasks:
+    - name: Update packages (Debian/Ubuntu)
+      apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Remove unused dependency packages (Debian/Ubuntu)
+      apt:
+        autoremove: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Update packages (Fedora/RHEL)
+      dnf:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Clean up unused packages (Fedora/RHEL)
+      dnf:
+        autoremove: yes
+      when: ansible_os_family == "RedHat"
