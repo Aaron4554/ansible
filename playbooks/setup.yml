@@ -1,0 +1,60 @@
+- name: Create rocannon-svc
+  hosts: all
+  become: true
+  tasks:
+    - name: Create user
+      user:
+        name: rocannon_svc
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Add SSH key
+      authorized_key:
+        user: rocannon_svc
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+    - name: Install sudo - Debian
+      apt:
+        name: sudo
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Instal sudo - RHEL
+      dnf:
+        name: sudo
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Restrict sudo
+      copy:
+        dest: /etc/sudoers.d/rocannon_svc
+        content: |
+          rocannon_svc ALL=(ALL) NOPASSWD: /home/rocannon_svc/scripts/run-updates.sh
+        validate: /usr/sbin/visudo -cf %s
+
+    - name: Create scripts directory
+      ansible.builtin.file:
+        path: /home/rocannon_svc/scripts
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Copy update script - Debian
+      ansible.builtin.copy:
+        src: ./scripts/update-debian.sh
+        dest: /home/rocannon_svc/scripts/run-updates.sh
+        owner: root
+        group: root
+        mode: '0755'
+      when: ansible_os_family == "Debian"
+
+    - name: Copy update script - RHEL
+      ansible.builtin.copy:
+        src: ./scripts/update-rhel.sh
+        dest: /home/rocannon_svc/scripts/run-updates.sh
+        owner: root
+        group: root
+        mode: '0755'
+      when: ansible_os_family == "RedHat"

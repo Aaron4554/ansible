@@ -1,12 +1,10 @@
 - name: Update all hosts
   hosts: all
   remote_user: rocannon_svc
-  become: true
+  gather_facts: true
   tasks:
-    - name: Run update script - Debian
-      script: /etc/ansible/scripts/update-debian.sh
-      when: ansible_os_family == "Debian"
 
-    - name: Run update script - RHEL family
-      script: /etc/ansible/scripts/update-rhel.sh
-      when: ansible_os_family == "RedHat"
+    - name: Run update script
+      become: true
+      ansible.builtin.command:
+        cmd: /home/rocannon_svc/scripts/run-updates.sh
