@@ -24,14 +24,12 @@
       copy:
         dest: /etc/sudoers.d/rocannon_svc
         content: |
-          rocannon_svc ALL=(ALL) NOPASSWD: /usr/bin/apt update, /usr/bin/apt upgrade -y, /usr/bin/apt autoremove -y
-        validate: /usr/sbin/visudo -cf %s
+          rocannon_svc ALL=(ALL) NOPASSWD: /usr/bin/apt, /usr/bin/apt-get 
       when: ansible_os_family == "Debian"
 
     - name: Restrict sudo - RHEL family
       copy:
         dest: /etc/sudoers.d/rocannon_svc
         content: |
-          rocannon_svc ALL=(ALL) NOPASSWD: /usr/bin/dnf update, /usr/bin/dnf upgrade -y, /usr/bin/dnf autoremove -y
-        validate: /usr/sbin/visudo -cf %s
+          rocannon_svc ALL=(ALL) NOPASSWD: /usr/bin/dnf, /usr/bin/dnf yum
       when: ansible_os_family == "RedHat"
