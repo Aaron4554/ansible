@@ -3,24 +3,10 @@
   remote_user: rocannon_svc
   become: true
   tasks:
-    - name: Update packages (Debian/Ubuntu)
-      apt:
-        upgrade: dist
-        update_cache: yes
+    - name: Run update script - Debian
+      script: /etc/ansible/scripts/update-debian.sh
       when: ansible_os_family == "Debian"
 
-    - name: Remove unused dependency packages (Debian/Ubuntu)
-      apt:
-        autoremove: yes
-      when: ansible_os_family == "Debian"
-
-    - name: Update packages (Fedora/RHEL)
-      dnf:
-        name: "*"
-        state: latest
-      when: ansible_os_family == "RedHat"
-
-    - name: Clean up unused packages (Fedora/RHEL)
-      dnf:
-        autoremove: yes
+    - name: Run update script - RHEL family
+      script: /etc/ansible/scripts/update-rhel.sh
       when: ansible_os_family == "RedHat"
