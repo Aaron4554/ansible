@@ -1,6 +1,7 @@
 - name: Update all hosts
   hosts: all
   become: true
+  remote_user: rocannon_svc
   tasks:
     - name: Update packages (Debian/Ubuntu)
       apt:
