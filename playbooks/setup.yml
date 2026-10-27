@@ -26,11 +26,11 @@
         state: present
       when: ansible_os_family == "RedHat"
 
-    - name: Restrict sudo
+    - name: Do not restrict sudo # I tried, I really did. but Ansible genereates temporary Python script wrappers containing the code. No way to white list an item that changes every time the playbook is ran :(
       copy:
         dest: /etc/sudoers.d/rocannon_svc
         content: |
-          rocannon_svc ALL=(ALL) NOPASSWD: /home/rocannon_svc/scripts/run-updates.sh
+          rocannon_svc ALL=(ALL) NOPASSWD: ALL
         validate: /usr/sbin/visudo -cf %s
 
     - name: Create scripts directory
@@ -43,7 +43,7 @@
 
     - name: Copy update script - Debian
       ansible.builtin.copy:
-        src: ./scripts/update-debian.sh
+        src: /etc/ansible/scripts/update-debian.sh
         dest: /home/rocannon_svc/scripts/run-updates.sh
         owner: root
         group: root
@@ -52,7 +52,7 @@
 
     - name: Copy update script - RHEL
       ansible.builtin.copy:
-        src: ./scripts/update-rhel.sh
+        src: /etc/ansible/scripts/update-rhel.sh
         dest: /home/rocannon_svc/scripts/run-updates.sh
         owner: root
         group: root
